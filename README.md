@@ -1,39 +1,138 @@
-# React Truffle Box
+# CreditHub
 
-This box comes with everything you need to start using Truffle to write, compile, test, and deploy smart contracts, and interact with them from a React app.
+A dapp pre-loaded with banking and loaning features
 
-## Installation
+## Deployment
+- First clone the repository
+  ```
+  git clone https://github.com/dingavinga1/credithub
+  ```
 
-First ensure you are in an empty directory.
+- Install `ganache-cli` and `truffle`
+  ```
+  npm install -g ganache-cli
+  npm install -g truffle
+  ```
 
-Run the `unbox` command using 1 of 2 ways.
+- Run `ganache-cli`
+  ```
+  ganache-cli
+  ```
 
-```sh
-# Install Truffle globally and run `truffle unbox`
-$ npm install -g truffle
-$ truffle unbox react
-```
+- Download [Metamask](https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) extension for Chrome and set it up
+- Import test accounts into Metamask by copying private keys of each wallet from the `ganache-cli` console
 
-```sh
-# Alternatively, run `truffle unbox` via npx
-$ npx truffle unbox react
-```
+- Compile and deploy the contract to Ganache
+  ```
+  cd truffle
+  npm install
+  truffle migrate
+  ```
 
-Start the react dev server.
+- Start the web server
+  ```
+  cd client
+  npm install
+  npm start
+  ```
 
-```sh
-$ cd client
-$ npm start
-```
+- Go to `localhost:8080` and enjoy!
 
-From there, follow the instructions on the hosted React app. It will walk you through using Truffle and Ganache to deploy the `SimpleStorage` contract, making calls to it, and sending transactions to change the contract's state.
+## Screens
 
-## FAQ
+### Authentication
 
-- __How do I use this with Ganache (or any other network)?__
+#### Register
+> Here, a user can register themselves to the smart contract by providing a password and their monthly income
 
-  The Truffle project is set to deploy to Ganache by default. If you'd like to change this, it's as easy as modifying the Truffle config file! Check out [our documentation on adding network configurations](https://trufflesuite.com/docs/truffle/reference/configuration/#networks). From there, you can run `truffle migrate` pointed to another network, restart the React dev server, and see the change take place.
+![Register](./assets/Register.png)
 
-- __Where can I find more resources?__
+#### Login 
+> Here, a user can log into the application by providing their password
 
-  This Box is a sweet combo of [Truffle](https://trufflesuite.com) and [Webpack](https://webpack.js.org). Either one would be a great place to start!
+![Login](./assets/Login.png)
+
+### Banking 
+
+#### Deposit
+> Depositing to the bank. The transaction is completed via Metamask
+
+![Deposit](./assets/Deposit.png)
+
+#### Withdraw
+> Withdrawing from the bank to your wallet
+
+![Withdraw](./assets/Withdraw.png)
+
+#### Loaning 
+> Viewing loan status, repaying and requesting loans
+
+![Loans](./assets/Loan.png)
+
+#### Profile
+> Viewing loan status and account balance
+
+![Profile](./assets/Profile.png)
+
+### Admin
+> Here, the bank owner can invest in the bank and view total amount available within the bank
+
+![Admin](./assets/Admin.png)
+
+## Solidity Code Review
+
+### Constructor
+The constructor is made payable to receive an initial funding of 50 ethers in the bank to get it up and running. This initial funding is required to start the bank.
+
+### Receive
+The default receive method is made payable to accept additional funding from anonymous users.
+
+### Modifiers
+
+#### isOwner
+This modifier is added to owner functions to verify the role of admin/owner.
+
+#### isAccountOwner
+This modifier is added to normal bank users to ensure they are registered with the account.
+
+#### canGetLoan
+This modifier is added to the request loan method to ensure:
+- The user has been a part of the bank for atleast 10 seconds (should be greater in real life)
+- The user does not have an already existing loan with the bank
+
+
+
+### Owner Methods
+
+#### invest 
+The owner can invest into the bank using this function.
+
+#### getBankFunds
+The owner can view the total funds available in the bank using this function.
+
+
+
+### User Methods
+
+#### register
+Users can register themselves with the bank by giving an initial fee of 1 ether using this function.
+
+#### deposit
+Users can deposit money into their accounts using this function.
+
+#### withdraw
+Users can withdraw money into their wallets using this function by providing their password
+
+#### getUserBalance
+Users can get their bank balance using this function.
+
+#### getLoan
+Users can request a loan from the bank using this function, provided that the loan amount is up to 50 ethers.
+
+#### getLoanStatus
+Users can get the amount to be paid and time of loan request using this function.
+
+#### returnLoan
+Users can return their loan using this function provided that they have enough balance in their account.
+
+
